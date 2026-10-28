@@ -8,7 +8,7 @@ import ItemsData from "@/data/itemData";
 import { getSessions, createSession, deleteSession, togglePin, MAX_SESSIONS, type TrackerSession } from "@/lib/sessionManager";
 import { idbDriver } from "@/lib/idbDriver";
 import { parseSnapshotJson, importSnapshotToNewSession } from "@/lib/stateSnapshot";
-import { loadLauncherPrefs, saveLauncherPrefs, buildLauncherPrefs, applyLauncherPrefs, loadRecentSprites, pushRecentSprite, buildPresetIDBState, loadAutotrackPrefs, saveAutotrackPrefs, saveLastLaunch } from "@/lib/launchHelpers";
+import { loadLauncherPrefs, saveLauncherPrefs, buildLauncherPrefs, applyLauncherPrefs, loadRecentSprites, pushRecentSprite, buildPresetIDBState, loadAutotrackPrefs, saveAutotrackPrefs, saveLastLaunch, loadLastLaunch } from "@/lib/launchHelpers";
 import { LaunchHeader } from "./launch/LaunchHeader";
 import { PresetSection } from "./launch/PresetSection";
 import { isPoLauncher } from "@/lib/poLauncher";
@@ -24,11 +24,14 @@ const LaunchPage: React.FC = () => {
   const { theme, setTheme } = useTheme();
   const savedPrefs = useMemo(() => loadLauncherPrefs(), []);
   const savedAutotrack = useMemo(() => loadAutotrackPrefs(), []);
+  // PO Launcher: this page is the launcher's tracker setup, so it starts from the last launch
+  // (game settings, starting items, preset) instead of the defaults, and keeps it up to date.
+  const lastLaunch = useMemo(() => (isPoLauncher ? loadLastLaunch() : null), []);
   const [settings, setSettings] = useState<SettingsState>(() =>
-    applyLauncherPrefs(DEFAULT_SETTINGS, savedPrefs)
+    applyLauncherPrefs(lastLaunch ? { ...DEFAULT_SETTINGS, ...lastLaunch.settings } : DEFAULT_SETTINGS, savedPrefs)
   );
   const [spriteName, setSpriteName] = useState(savedPrefs.spriteName ?? "link");
-  const [startingItems, setStartingItems] = useState<Record<string, number>>({});
+  const [startingItems, setStartingItems] = useState<Record<string, number>>(() => lastLaunch?.startingItems ?? {});
   const [sessions, setSessions] = useState<TrackerSession[]>([]);
   const [sessionsLoaded, setSessionsLoaded] = useState(false);
   const [recentSprites, setRecentSprites] = useState<string[]>(() => loadRecentSprites());
@@ -39,7 +42,7 @@ const LaunchPage: React.FC = () => {
   const [sessionName, setSessionName] = useState("");
   const [motd, setMotd] = useState<string | null>(null);
   const [alerts, setAlerts] = useState<string | null>(null);
-  const [selectedPresetId, setSelectedPresetId] = useState<string | null>(null);
+  const [selectedPresetId, setSelectedPresetId] = useState<string | null>(() => lastLaunch?.presetId ?? null);
   const [nextLadder, setNextLadder] = useState<{ presetId: string; name: string; time: Date } | null>(null);
   const [restoreError, setRestoreError] = useState<string | null>(null);
 
@@ -87,6 +90,12 @@ const LaunchPage: React.FC = () => {
   useEffect(() => {
     saveLauncherPrefs(buildLauncherPrefs({ ...settings, spriteName }));
   }, [spriteName, settings]);
+
+  // PO Launcher: whatever is set up here is what Play / Tracker open next, launched or not.
+  useEffect(() => {
+    if (!isPoLauncher) return;
+    saveLastLaunch({ settings: { ...settings, spriteName }, spriteName, presetId: selectedPresetId ?? undefined, startingItems });
+  }, [settings, spriteName, selectedPresetId, startingItems]);
 
   // Persist autotracker connection settings globally so they're remembered across launches.
   useEffect(() => {
