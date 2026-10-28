@@ -7,6 +7,10 @@ import { store } from './store/store.ts'
 import { AutotrackerProvider } from './components/AutotrackerProvider.tsx'
 import { SettingsProvider } from './components/SettingsProvider.tsx'
 import LogicProvider from './components/LogicProvider.tsx'
+import { installPoTheme } from './lib/poTheme.ts'
+
+// PO Launcher accent colours (no-op unless the launcher has applied one)
+installPoTheme()
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
