@@ -24,6 +24,8 @@ interface MapLocationProps {
   name: string;
   location: LocationData;
   className?: string;
+  /** Extra inline style for the marker's box (PO: scaled marker size) */
+  style?: React.CSSProperties;
   type: "dungeon" | "item" | "tree" | "entrance";
   tooltip?: boolean;
   isEntrance: boolean;
@@ -323,7 +325,7 @@ function MapLocation(props: MapLocationProps) {
     <div
       key={locName}
       className={cn("absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 group z-10 hover:z-20", props.className, hidden && "hidden", (currentMode === "connect" || currentMode === "generic_connect") && "cursor-crosshair")}
-      style={{ top: `${yPercent}%`, left: `${xPercent}%` }}
+      style={{ top: `${yPercent}%`, left: `${xPercent}%`, ...props.style }}
       onMouseOver={handleMouseEnter}
       onMouseOut={handleMouseLeave}
       onClick={handleLocationClick}

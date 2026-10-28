@@ -170,6 +170,8 @@ export interface SettingsState {
   logTriforcePieces: boolean;
   /** Marker drawn for a dungeon's prize while it is still unknown ("unknown" is the question mark). */
   defaultPrize: DefaultPrize;
+  /** Size of the location markers on the maps, as a multiplier of the normal size (0.5 - 2). */
+  mapMarkerScale: number;
 
   // Player sequence break settings
   sequenceBreaks: UserSequenceBreaks;
@@ -228,6 +230,7 @@ export const initialState: SettingsState = {
   // UI settings
   autotracking: true,
   defaultPrize: "crystal",
+  mapMarkerScale: 1,
   includeDungeonItemsInCounter: false,
   mapMode: "normal",
   connectionLinesMode: "all",

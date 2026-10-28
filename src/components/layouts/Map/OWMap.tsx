@@ -62,6 +62,12 @@ function OWMap({ world = "lw" }: OWMapProps) {
   const mapMarkers: { name: string; size: string; location: LocationData; type: "dungeon" | "item" | "tree" | "entrance" }[] = [];
   const mapObstacles: Record<string, Rect> = {};
 
+  // PO: user-chosen marker size (1 = the sizes above). Applied as inline width/height so the
+  // Tailwind size classes stay the source of the base size; label placement sees the same box.
+  const markerScale = Math.min(2, Math.max(0.5, Number(settings.mapMarkerScale) || 1));
+  const pxOf = (size: string) => ({ h: parseFloat(size.split(" ")[0].split("-")[1]) * 4, w: parseFloat(size.split(" ")[1].split("-")[1]) * 4 });
+  const scaledStyle = (size: string) => (markerScale === 1 ? undefined : { width: pxOf(size).w * markerScale, height: pxOf(size).h * markerScale });
+
   Object.keys(locationsData).map((locationKey) => {
     const location = locationsData[locationKey];
     if (location.world !== world) return null;
@@ -97,14 +103,13 @@ function OWMap({ world = "lw" }: OWMapProps) {
       size,
     });
 
-    const h = parseFloat(size.split(" ")[0].split("-")[1]) * 4;
-    const w = parseFloat(size.split(" ")[1].split("-")[1]) * 4;
+    const { h, w } = pxOf(size);
 
     mapObstacles[locationKey] = {
       x: location.x,
       y: location.y,
-      w,
-      h,
+      w: w * markerScale,
+      h: h * markerScale,
     };
   });
 
@@ -129,14 +134,13 @@ function OWMap({ world = "lw" }: OWMapProps) {
       size,
     });
 
-    const h = parseFloat(size.split(" ")[0].split("-")[1]) * 4;
-    const w = parseFloat(size.split(" ")[1].split("-")[1]) * 4;
+    const { h, w } = pxOf(size);
 
     mapObstacles[locationKey] = {
       x: location.x,
       y: location.y,
-      w,
-      h,
+      w: w * markerScale,
+      h: h * markerScale,
     };
   });
 
@@ -207,7 +211,7 @@ function OWMap({ world = "lw" }: OWMapProps) {
       }}
     >
       {mapMarkers.map(({ name, location, type, size }) => (
-        <MapLocation key={name} name={name} location={location} type={type} className={`hover:origin-center hover:scale-150 ${size}`} tooltip={true} isEntrance={type === "entrance"} />
+        <MapLocation key={name} name={name} location={location} type={type} className={`hover:origin-center hover:scale-150 ${size}`} style={scaledStyle(size)} tooltip={true} isEntrance={type === "entrance"} />
       ))}
 
       {mapMode !== "off" && entranceMode !== "none" && entranceLabelsMode !== "off" && <EntranceLabelOverlay obstacles={mapObstacles} />}

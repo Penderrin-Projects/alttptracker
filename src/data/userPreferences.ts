@@ -33,6 +33,7 @@ export const REMEMBERED_SETTINGS = [
   "eventLogMode",
   "logTriforcePieces",
   "defaultPrize",
+  "mapMarkerScale",
 
   // Colours
   "appBackground",

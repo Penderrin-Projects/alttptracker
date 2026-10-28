@@ -134,6 +134,23 @@ export function TrackerSettingsTab({
                   { value: "unknown", label: "Question mark" },
                 ]}
               />
+              <div className="space-y-1.5">
+                <div className="flex items-center gap-1.5">
+                  <Label className="text-xs font-medium">Map Marker Size</Label>
+                  <SettingHelp label="Map Marker Size" description="Size of the location markers on the maps, from 50% to 200% of normal. Dungeon markers scale with them." />
+                  <span className="ml-auto text-xs text-muted-foreground tabular-nums">{Math.round((settings.mapMarkerScale ?? 1) * 100)}%</span>
+                </div>
+                <input
+                  type="range"
+                  min={50}
+                  max={200}
+                  step={10}
+                  value={Math.round((settings.mapMarkerScale ?? 1) * 100)}
+                  onChange={(e) => updateSetting("mapMarkerScale", Number(e.target.value) / 100)}
+                  className="w-full h-1.5 cursor-pointer accent-primary"
+                  aria-label="Map marker size"
+                />
+              </div>
               <SettingSwitch label="Show Inset Boss Square" description="Draw a smaller square inside dungeon markers on the map, coloured by the logic status of the dungeon's boss, with the dungeon's prize once it is known." checked={settings.showInsetBossSquare} onChange={(v) => updateSetting("showInsetBossSquare", v)} />
               <SettingSwitch
                 label="Use old style dungeon squares in entrance"
