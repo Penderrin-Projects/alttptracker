@@ -11,6 +11,9 @@ import { parseSnapshotJson, importSnapshotToNewSession } from "@/lib/stateSnapsh
 import { loadLauncherPrefs, saveLauncherPrefs, buildLauncherPrefs, applyLauncherPrefs, loadRecentSprites, pushRecentSprite, buildPresetIDBState, loadAutotrackPrefs, saveAutotrackPrefs, saveLastLaunch } from "@/lib/launchHelpers";
 import { LaunchHeader } from "./launch/LaunchHeader";
 import { PresetSection } from "./launch/PresetSection";
+import { isPoLauncher } from "@/lib/poLauncher";
+import { PoLaunchHeader } from "./po/PoLaunchHeader";
+import { PoPresetBar } from "./po/PoPresetBar";
 import { LaunchCard } from "./launch/LaunchCard";
 import { GameSettingsTabs } from "./launch/GameSettingsTabs";
 import { SpriteSelector } from "./launch/SpriteSelector";
@@ -273,21 +276,24 @@ const LaunchPage: React.FC = () => {
 
   return (
     <TooltipProvider>
-      <title>Muffins Tracker 2.0 - Launch Page</title>
+      <title>{isPoLauncher ? "PO Tracker - Setup" : "Muffins Tracker 2.0 - Launch Page"}</title>
 
       <div className="min-h-screen bg-background text-foreground overflow-auto">
-        <LaunchHeader theme={theme} setTheme={setTheme} autotrackStatus={autotrackStatus} autotrackProtocol={autotrackProtocol} autotrackHost={autotrackHost} autotrackPort={autotrackPort} />
+        {/* PO Launcher: no site chrome — a slim bar with the autotracker status instead */}
+        {isPoLauncher
+          ? <PoLaunchHeader autotrackStatus={autotrackStatus} autotrackProtocol={autotrackProtocol} autotrackHost={autotrackHost} autotrackPort={autotrackPort} />
+          : <LaunchHeader theme={theme} setTheme={setTheme} autotrackStatus={autotrackStatus} autotrackProtocol={autotrackProtocol} autotrackHost={autotrackHost} autotrackPort={autotrackPort} />}
 
-        <main className="max-w-6xl mx-auto px-4 py-6 space-y-4">
+        <main className={isPoLauncher ? "max-w-6xl mx-auto px-4 py-3 space-y-3" : "max-w-6xl mx-auto px-4 py-6 space-y-4"}>
           {/* Alerts */}
-          {alerts && (
+          {!isPoLauncher && alerts && (
             <div className="flex items-start gap-2 rounded-md border border-border bg-muted/50 px-4 py-2 text-sm text-muted-foreground">
               <AlertOctagon className="size-4 mt-0.5 shrink-0 text-red-600" />
               <span className="whitespace-pre-line">{alerts}</span>
             </div>
           )}
           {/* MOTD */}
-          {motd && (
+          {!isPoLauncher && motd && (
             <div className="flex items-start gap-2 rounded-md border border-border bg-muted/50 px-4 py-2 text-sm text-muted-foreground">
               <Info className="size-4 mt-0.5 shrink-0 text-primary" />
               <span className="whitespace-pre-line">{motd}</span>
@@ -302,7 +308,9 @@ const LaunchPage: React.FC = () => {
             </div>
           )}
 
-          <PresetSection nextLadder={nextLadder} applyPreset={applyPreset} />
+          {isPoLauncher
+            ? <PoPresetBar nextLadder={nextLadder} applyPreset={applyPreset} />
+            : <PresetSection nextLadder={nextLadder} applyPreset={applyPreset} />}
 
           <LaunchCard
             sessionName={sessionName}
@@ -343,13 +351,13 @@ const LaunchPage: React.FC = () => {
           </div>
 
           {/* Footer */}
-          <footer className="border-t pt-4 pb-6 mt-6 flex items-center justify-between text-xs text-muted-foreground">
+          {!isPoLauncher && <footer className="border-t pt-4 pb-6 mt-6 flex items-center justify-between text-xs text-muted-foreground">
             <span>Design by Muffins</span>
             <a href="https://github.com/KrisDavie/alttptracker" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 hover:text-foreground transition-colors">
               <Github className="size-3.5" />
               GitHub
             </a>
-          </footer>
+          </footer>}
         </main>
       </div>
     </TooltipProvider>

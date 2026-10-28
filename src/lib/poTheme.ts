@@ -11,6 +11,8 @@
  * .light rules); the user's own colours (status colours, app background) are left alone.
  */
 
+import { isPoLauncher } from "./poLauncher";
+
 const CHARCOAL = {
   background: "#141517",
   panel: "#1b1d21",
@@ -83,4 +85,5 @@ export function installPoTheme(): void {
   let saved: string | null = null;
   try { saved = localStorage.getItem(PO_THEME_KEY); } catch { /* storage unavailable */ }
   if (saved) applyPoTheme(saved);
+  else if (isPoLauncher) applyPoTheme("amber");   // the launcher's default; it sends the real choice right after load
 }

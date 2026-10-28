@@ -1,0 +1,51 @@
+/*
+ * PO Launcher look. Every rule here is scoped to html[data-po-theme], which poTheme.ts sets
+ * when the launcher applies a colour theme, so the hosted tracker is untouched.
+ *
+ * Mirrors the launcher's own stylesheet: IBM Plex Sans body, IBM Plex Mono for the small
+ * letter-spaced labels, hairline borders, small radii.
+ */
+@font-face { font-family: 'IBM Plex Sans'; font-style: normal; font-weight: 400 600; font-display: swap; src: url('/fonts/IBMPlexSans-variable.woff2') format('woff2'); }
+@font-face { font-family: 'IBM Plex Mono'; font-style: normal; font-weight: 400; font-display: swap; src: url('/fonts/IBMPlexMono-400.woff2') format('woff2'); }
+@font-face { font-family: 'IBM Plex Mono'; font-style: normal; font-weight: 500; font-display: swap; src: url('/fonts/IBMPlexMono-500.woff2') format('woff2'); }
+
+html[data-po-theme] {
+  --font-sans: 'IBM Plex Sans', system-ui, sans-serif;
+  --font-heading: 'IBM Plex Sans', system-ui, sans-serif;
+  --po-mono: 'IBM Plex Mono', Consolas, monospace;
+  --radius: 0.2rem;
+  -webkit-font-smoothing: antialiased;
+}
+
+html[data-po-theme] body {
+  font-family: var(--font-sans);
+}
+
+/* The launcher's small mono label: block headings, section names */
+html[data-po-theme] .po-label {
+  font-family: var(--po-mono);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+html[data-po-theme] .po-mono {
+  font-family: var(--po-mono);
+  font-size: 11px;
+}
+
+/* Card titles become the same kind of label; descriptions stay as they are */
+html[data-po-theme] [data-slot="card-title"] {
+  font-family: var(--po-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+
+/* Hairlines instead of soft shadows */
+html[data-po-theme] [data-slot="card"] {
+  box-shadow: none;
+  border-color: var(--border);
+}
