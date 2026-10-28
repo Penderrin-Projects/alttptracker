@@ -121,6 +121,19 @@ export function TrackerSettingsTab({
               <SettingSwitch label="Always Show Big Keys" description="Show a big key tracker for every dungeon that has one, even when big keys stay in their own dungeon." checked={settings.alwaysShowBigKeys} onChange={(v) => updateSetting("alwaysShowBigKeys", v)} />
               <SettingSwitch label="Always Show Small Keys" description="Show a small key counter for every dungeon, even when small keys stay in their own dungeon." checked={settings.alwaysShowSmallKeys} onChange={(v) => updateSetting("alwaysShowSmallKeys", v)} />
               <SettingSwitch label="Show Key Totals" description="Show small keys as collected / total for the dungeon instead of only the number collected." checked={settings.showKeyTotals} onChange={(v) => updateSetting("showKeyTotals", v)} />
+              <SettingSelect
+                label="Default Dungeon Prize"
+                description="Marker shown on a dungeon until its prize is known. Autotracking replaces it with the real prize when you collect it, and clicking the marker still cycles through the prizes."
+                value={settings.defaultPrize ?? "unknown"}
+                onChange={(v) => updateSetting("defaultPrize", v as SettingsState["defaultPrize"])}
+                options={[
+                  { value: "crystal", label: "Blue crystal" },
+                  { value: "redCrystal", label: "Red crystal" },
+                  { value: "pendant", label: "Pendant" },
+                  { value: "greenPendant", label: "Green pendant" },
+                  { value: "unknown", label: "Question mark" },
+                ]}
+              />
               <SettingSwitch label="Show Inset Boss Square" description="Draw a smaller square inside dungeon markers on the map, coloured by the logic status of the dungeon's boss, with the dungeon's prize once it is known." checked={settings.showInsetBossSquare} onChange={(v) => updateSetting("showInsetBossSquare", v)} />
               <SettingSwitch
                 label="Use old style dungeon squares in entrance"

@@ -32,6 +32,7 @@ export const REMEMBERED_SETTINGS = [
   "showKeyTotals",
   "eventLogMode",
   "logTriforcePieces",
+  "defaultPrize",
 
   // Colours
   "appBackground",

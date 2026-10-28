@@ -11,8 +11,12 @@ interface PrizeSelectorProps {
 
 function PrizeSelector({ dungeon, className }: PrizeSelectorProps) {
   const dispatch = useDispatch();
-  const prize = useSelector((state: RootState) => state.dungeons[dungeon]?.prize || "unknown");
+  const trackedPrize = useSelector((state: RootState) => state.dungeons[dungeon]?.prize || "unknown");
   const prizeCollected = useSelector((state: RootState) => state.dungeons[dungeon]?.prizeCollected || false);
+  // While the prize is unknown, draw the user's chosen placeholder instead of the question mark.
+  // Only the picture changes: clicking still cycles from "unknown", and autotracking still writes the real prize.
+  const defaultPrize = useSelector((state: RootState) => state.settings.defaultPrize ?? "unknown");
+  const prize = trackedPrize === "unknown" ? defaultPrize : trackedPrize;
 
   return (
     <div

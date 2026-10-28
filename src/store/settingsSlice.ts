@@ -97,6 +97,7 @@ export type UserSequenceBreaks = { [K in keyof typeof defaultUserSequenceBreaks]
 export type MapMode = "off" | "normal" | "compact" | "vertical" | "popoutNormal" | "popoutVertical";
 export type EventLogMode = "off" | "attached" | "popout";
 
+export type DefaultPrize = "unknown" | "greenPendant" | "pendant" | "crystal" | "redCrystal";
 export type goalTypes = "ganon" | "fast_ganon" | "ad" | "pedestal" | "triforce_hunt" | "ganonhunt" | "trinity" | "completionist";
 export type gtOpenTypes = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "random" | "locksmith";
 export type ganonVulnerableTypes = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "random" | "completionist" | "ad" | "triforce" | "other";
@@ -167,6 +168,8 @@ export interface SettingsState {
   showKeyTotals: boolean;
   eventLogMode: EventLogMode;
   logTriforcePieces: boolean;
+  /** Marker drawn for a dungeon's prize while it is still unknown ("unknown" is the question mark). */
+  defaultPrize: DefaultPrize;
 
   // Player sequence break settings
   sequenceBreaks: UserSequenceBreaks;
@@ -224,6 +227,7 @@ export const initialState: SettingsState = {
 
   // UI settings
   autotracking: true,
+  defaultPrize: "crystal",
   includeDungeonItemsInCounter: false,
   mapMode: "normal",
   connectionLinesMode: "all",
