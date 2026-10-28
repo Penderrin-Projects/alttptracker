@@ -25,10 +25,11 @@ export function Tracker() {
 
   useEffect(() => {
     const handleResize = () => {
-      const widthScale = Math.min(window.innerWidth / trackerWidth, 1);
+      // PO: scale up as well as down, so a bigger window shows a bigger tracker.
+      const widthScale = window.innerWidth / trackerWidth;
       const gap = showAttachedEventLog ? EVENT_LOG_GAP : 0;
       const totalHeight = trackerHeight + eventLogHeight + gap;
-      const heightScale = Math.min(window.innerHeight / totalHeight, 1);
+      const heightScale = window.innerHeight / totalHeight;
       setScale(Math.min(widthScale, heightScale));
     };
     window.addEventListener("resize", handleResize);

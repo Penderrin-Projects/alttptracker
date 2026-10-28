@@ -23,7 +23,7 @@ export function TrackerMap() {
     const handleResize = () => {
       const scaleW = window.innerWidth / mapWidth;
       const scaleH = window.innerHeight / mapHeight;
-      setScale(Math.min(scaleW, scaleH, 1));
+      setScale(Math.min(scaleW, scaleH)); // PO: scale up as well as down
     };
     window.addEventListener("resize", handleResize);
     handleResize();
