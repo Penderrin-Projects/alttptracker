@@ -1,8 +1,9 @@
 import { createSession, touchSession } from "./sessionManager";
 import { initialState as DEFAULT_SETTINGS, type SettingsState } from "@/store/settingsSlice";
-import { loadLauncherPrefs, applyLauncherPrefs, buildPresetIDBState } from "./launchHelpers";
+import { loadLauncherPrefs, applyLauncherPrefs, buildPresetIDBState, loadLastLaunch } from "./launchHelpers";
 import { getPresetById } from "@/data/launcherPresets";
 import { idbDriver } from "./idbDriver";
+import { getMapPopoutDimensions, getEventLogPopoutDimensions } from "./trackerSizing";
 
 /**
  * Detects or generates the current session/instance ID from URL parameters.
@@ -58,6 +59,17 @@ function launchDirectSession(sessionId: string, urlParams: URLSearchParams) {
 
   let startingItems: Record<string, number> = {};
   let presetId: string | undefined;
+  let spriteName = savedPrefs.spriteName;
+
+  // PO Launcher: ?last=1 recreates whatever the Launch page launched last (game settings,
+  // starting items, sprite), with the remembered UI preferences applied on top.
+  const last = urlParams.get("last") === "1" ? loadLastLaunch() : null;
+  if (last) {
+    settings = applyLauncherPrefs({ ...DEFAULT_SETTINGS, ...last.settings }, savedPrefs);
+    startingItems = last.startingItems ?? {};
+    presetId = last.presetId;
+    spriteName = savedPrefs.spriteName ?? last.spriteName;
+  }
 
   // Apply preset if provided
   if (presetParam) {
@@ -75,7 +87,7 @@ function launchDirectSession(sessionId: string, urlParams: URLSearchParams) {
   createSession(
     settings,
     sessionName,
-    savedPrefs.spriteName,
+    spriteName,
     presetId,
     sessionId,
     startingItems
@@ -98,4 +110,19 @@ function launchDirectSession(sessionId: string, urlParams: URLSearchParams) {
   if (presetState.checks) idbDriver.setItem(prefix + "checks", JSON.stringify(presetState.checks)).catch(() => {});
   if (presetState.entrances) idbDriver.setItem(prefix + "entrances", JSON.stringify(presetState.entrances)).catch(() => {});
   if (presetState.dungeons) idbDriver.setItem(prefix + "dungeons", JSON.stringify(presetState.dungeons)).catch(() => {});
+
+  // Put the session id in the address bar so a reload comes back to this session instead of making another.
+  try { history.replaceState(null, "", `${window.location.pathname}?id=${encodeURIComponent(sessionId)}`); } catch { /* ignore */ }
+
+  // PO Launcher: a direct launch has no Launch page to open the popouts, so open them here.
+  if (last) {
+    if (settings.mapMode === "popoutNormal" || settings.mapMode === "popoutVertical") {
+      const { width, height } = getMapPopoutDimensions(settings.mapMode);
+      window.open(`/map?id=${encodeURIComponent(sessionId)}`, "_blank", `width=${width},height=${height}`);
+    }
+    if (settings.eventLogMode === "popout") {
+      const { width, height } = getEventLogPopoutDimensions();
+      window.open(`/event-log?id=${encodeURIComponent(sessionId)}`, "_blank", `width=${width},height=${height}`);
+    }
+  }
 }

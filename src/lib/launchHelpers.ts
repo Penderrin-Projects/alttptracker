@@ -10,6 +10,30 @@ export const LAUNCHER_PREFS_KEY = "muffins_launcher_prefs";
 export const RECENT_SPRITES_KEY = "muffins_recent_sprites";
 export const MAX_RECENT_SPRITES = 6;
 export const AUTOTRACK_PREFS_KEY = "muffins_autotrack_prefs";
+/** PO Launcher: what the Launch page launched last, so the launcher can open the tracker straight into it. */
+export const LAST_LAUNCH_KEY = "po_last_launch";
+
+export interface LastLaunch {
+  settings: Partial<SettingsState>;
+  spriteName?: string;
+  presetId?: string;
+  startingItems?: Record<string, number>;
+}
+
+export function saveLastLaunch(launch: LastLaunch) {
+  try { localStorage.setItem(LAST_LAUNCH_KEY, JSON.stringify(launch)); } catch { /* storage unavailable */ }
+}
+
+export function loadLastLaunch(): LastLaunch | null {
+  try {
+    const raw = localStorage.getItem(LAST_LAUNCH_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as LastLaunch;
+    return parsed && typeof parsed === "object" && parsed.settings ? parsed : null;
+  } catch {
+    return null;
+  }
+}
 
 /** Autotracker connection preferences — persisted globally (not per-session). */
 export interface AutotrackPrefs {

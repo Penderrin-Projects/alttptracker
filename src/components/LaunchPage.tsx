@@ -8,7 +8,7 @@ import ItemsData from "@/data/itemData";
 import { getSessions, createSession, deleteSession, togglePin, MAX_SESSIONS, type TrackerSession } from "@/lib/sessionManager";
 import { idbDriver } from "@/lib/idbDriver";
 import { parseSnapshotJson, importSnapshotToNewSession } from "@/lib/stateSnapshot";
-import { loadLauncherPrefs, saveLauncherPrefs, buildLauncherPrefs, applyLauncherPrefs, loadRecentSprites, pushRecentSprite, buildPresetIDBState, loadAutotrackPrefs, saveAutotrackPrefs } from "@/lib/launchHelpers";
+import { loadLauncherPrefs, saveLauncherPrefs, buildLauncherPrefs, applyLauncherPrefs, loadRecentSprites, pushRecentSprite, buildPresetIDBState, loadAutotrackPrefs, saveAutotrackPrefs, saveLastLaunch } from "@/lib/launchHelpers";
 import { LaunchHeader } from "./launch/LaunchHeader";
 import { PresetSection } from "./launch/PresetSection";
 import { LaunchCard } from "./launch/LaunchCard";
@@ -199,6 +199,8 @@ const LaunchPage: React.FC = () => {
         const session = await createSession(launchSettings, sessionName || undefined, spriteName, selectedPresetId ?? undefined, undefined, startingItems);
         id = session.id;
         setSessions(await getSessions());
+        // PO Launcher: remember this launch so /tracker?last=1 can recreate it
+        saveLastLaunch({ settings: launchSettings, spriteName, presetId: selectedPresetId ?? undefined, startingItems });
       }
 
       pushRecentSprite(spriteName);
